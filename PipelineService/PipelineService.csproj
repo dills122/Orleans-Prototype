@@ -12,4 +12,8 @@
     <PackageReference Include="Gridsum.DataflowEx" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DataModels\DataModels.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,29 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
 using BusinessLogic.GrainInterfaces;
 using DataModels.Models;
 using DataModels.Exceptions;
+using Microsoft.AspNetCore.Http;
+using PipelineService.Interfaces;
+using System.IO;
+using PipelineService.Models;
+using PipelineService.Pipelines;
 
 namespace OrleansClient.Controllers
 {
     public class OrderController : Controller
     {
         private IClusterClient _client;
+        private IPipelineAlloc<OrderProcessingPipeline> _pipelineAlloc;
+        private IPipeline<OrderProcessing> _pipeline;
 
-        public OrderController(IClusterClient client)
+        public OrderController(IClusterClient client, IPipelineAlloc<OrderProcessingPipeline> pipelineAlloc)
         {
+            _pipelineAlloc = pipelineAlloc;
             _client = client;
+            _pipeline = _pipelineAlloc.RetrievePipeline().Result;
         }
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             var grain = _client.GetGrain<IAllOrders>("All");
             var orders = grain.GetAllOrders().Result;
-            if(orders == null)
+            if (orders == null)
             {
                 var emptyList = new List<Order>();
                 return View(emptyList);
@@ -33,13 +41,13 @@ namespace OrleansClient.Controllers
         [HttpGet]
         public IActionResult Details(int id)
         {
-            if(id == 0)
+            if (id == 0)
             {
                 return NotFound();
             }
             var grain = _client.GetGrain<IOrder>(id);
             var order = grain.GetOrder().Result;
-            if(order.CreatedDate == DateTime.MinValue)
+            if (order.CreatedDate == DateTime.MinValue)
             {
                 return NotFound();
             }
@@ -53,18 +61,41 @@ namespace OrleansClient.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderId, OrderDescription, RowVersion, CreatedDate, orderType, Username")] Order order)
+        public async Task<IActionResult> Create(Order order, List<IFormFile> files)
         {
-            if(order != null)
+            order.CreatedDate = DateTime.Now;
+            //Static for now since not session state/auth set up for knowing
+            order.Username = "dills122";
+            OrderProcessing orderProcessing = new OrderProcessing();
+            orderProcessing.order = order;
+            foreach (IFormFile file in files)
             {
-                var grain = _client.GetGrain<IOrder>(order.OrderId);
-                if(grain.GetOrder().Result.CreatedDate == DateTime.MinValue)
+                using (var memoryStream = new MemoryStream())
                 {
-                    await grain.CreateOrder(order);
-                    return RedirectToAction(nameof(Index));
+                    file.OpenReadStream().CopyTo(memoryStream);
+                    var FilesBytes = memoryStream.ToArray();
+                    if (FilesBytes != null)
+                    {
+                        InputFile inputFile = new InputFile
+                        {
+                            documentType = DocumentType.Other,
+                            FileExtension = file.ContentType,
+                            FileName = file.FileName,
+                            FilesBytes = FilesBytes
+                        };
+                        orderProcessing.files.Add(inputFile);
+                    }
                 }
             }
-            return View(order);
+
+            List<OrderProcessing> orderProcessings = new List<OrderProcessing>();
+            orderProcessings.Add(orderProcessing);
+
+            _pipeline = await _pipelineAlloc.RetrievePipeline();
+            var test = await _pipeline.ProcessWaitForResults(orderProcessings);
+            //_pipeline.ProcessAndForget(orderProcessings);
+
+            return View();
         }
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
@@ -75,7 +106,7 @@ namespace OrleansClient.Controllers
             }
             var grain = _client.GetGrain<IOrder>(id);
             var order = grain.GetOrder().Result;
-            if(order.CreatedDate != DateTime.MinValue)
+            if (order.CreatedDate != DateTime.MinValue)
             {
                 return View(order);
             }
@@ -84,7 +115,7 @@ namespace OrleansClient.Controllers
 
         public async Task<IActionResult> Edit(int id, [Bind("OrderId, OrderDescription, RowVersion, CreatedDate, orderType, Username")] Order order)
         {
-            if(id != order.OrderId)
+            if (id != order.OrderId)
             {
                 return NotFound();
             }
@@ -93,7 +124,7 @@ namespace OrleansClient.Controllers
             {
 
             }
-            catch(UpdateException ex)
+            catch (UpdateException ex)
             {
                 var dbValues = (Order)ex.databaseValues;
                 //TODO Optimistic concurrency
@@ -103,13 +134,13 @@ namespace OrleansClient.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            if(id == 0)
+            if (id == 0)
             {
                 return NotFound();
             }
             var grain = _client.GetGrain<IOrder>(id);
             var order = grain.GetOrder().Result;
-            if(order.CreatedDate != DateTime.MinValue)
+            if (order.CreatedDate != DateTime.MinValue)
             {
                 return View(order);
             }
@@ -120,13 +151,13 @@ namespace OrleansClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if(id == 0)
+            if (id == 0)
             {
                 return NotFound();
             }
             var grain = _client.GetGrain<IOrder>(id);
             var order = grain.GetOrder().Result;
-            if(order.CreatedDate != DateTime.MinValue)
+            if (order.CreatedDate != DateTime.MinValue)
             {
                 //TODO create delete method in order grain
             }
