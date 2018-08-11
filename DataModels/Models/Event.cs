@@ -14,7 +14,7 @@ namespace DataModels.Models
     public class Event
     {
         [Key]
-        public long EventId { get; set; }
+        public Guid EventId { get; set; }
         [Required]
         public EventType eventType { get; set; }
         [DataType(DataType.Date)]

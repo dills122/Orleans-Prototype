@@ -15,7 +15,7 @@ namespace DataModels.Models
     public class Document
     {
         [Key]
-        public long DocumentId { get; set; }
+        public Guid DocumentId { get; set; }
         [Required]
         public string DocumentName { get; set; }
         [Required]
@@ -33,7 +33,7 @@ namespace DataModels.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime LastUpdated { get; set; }
-        public long OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public virtual Order order { get; set; }
     }
 }

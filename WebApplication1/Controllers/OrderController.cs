@@ -41,9 +41,9 @@ namespace OrleansClient.Controllers
             return View(orders);
         }
         [HttpGet]
-        public IActionResult Details(int id)
+        public IActionResult Details(Guid id)
         {
-            if (id == 0)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -72,9 +72,11 @@ namespace OrleansClient.Controllers
         public async Task<IActionResult> Create(Order order, List<IFormFile> files)
         {
             order.CreatedDate = DateTime.Now;
+            order.OrderId = Guid.NewGuid();
             //Static for now since not session state/auth set up for knowing
             OrderProcessing orderProcessing = new OrderProcessing();
             orderProcessing.order = order;
+            
             foreach (IFormFile file in files)
             {
                 using (var memoryStream = new MemoryStream())
@@ -105,9 +107,9 @@ namespace OrleansClient.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(Guid id)
         {
-            if (id == 0)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -120,7 +122,7 @@ namespace OrleansClient.Controllers
             return NotFound();
         }
 
-        public async Task<IActionResult> Edit(int id, [Bind("OrderId, OrderDescription, RowVersion, CreatedDate, orderType, Username")] Order order)
+        public async Task<IActionResult> Edit(Guid id, [Bind("OrderId, OrderDescription, RowVersion, CreatedDate, orderType, Username")] Order order)
         {
             if (id != order.OrderId)
             {
@@ -139,9 +141,9 @@ namespace OrleansClient.Controllers
             return View(order);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == 0)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -156,9 +158,9 @@ namespace OrleansClient.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (id == 0)
+            if (id == null)
             {
                 return NotFound();
             }

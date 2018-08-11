@@ -20,7 +20,7 @@ namespace BusinessLogic.Grains
             //Initializes on grain activation
             state = new Order();
 
-            state.OrderId = this.GetPrimaryKeyLong();
+            state.OrderId = this.GetPrimaryKey();
             ReadState();
 
             return base.OnActivateAsync();

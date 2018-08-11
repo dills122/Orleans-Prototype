@@ -10,7 +10,7 @@ using System.Text;
 
 namespace RepositoryLayer.Repository
 {
-    public class OrderRepository : IRepository<Order, long>, IOrderRepository<Order>
+    public class OrderRepository : IRepository<Order, Guid>, IOrderRepository<Order>
     {
         private IUnitOfWork _unitOfWork;
         private IDatabaseContextFactory _databaseContextFactory;
@@ -47,7 +47,7 @@ namespace RepositoryLayer.Repository
             throw new NotImplementedException();
         }
 
-        public Order Get(long key)
+        public Order Get(Guid key)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {

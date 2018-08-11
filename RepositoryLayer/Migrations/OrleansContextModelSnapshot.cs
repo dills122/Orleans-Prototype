@@ -21,9 +21,8 @@ namespace RepositoryLayer.Migrations
 
             modelBuilder.Entity("DataModels.Models.Document", b =>
                 {
-                    b.Property<long>("DocumentId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("DocumentId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Created");
 
@@ -41,7 +40,7 @@ namespace RepositoryLayer.Migrations
 
                     b.Property<string>("Location");
 
-                    b.Property<long>("OrderId");
+                    b.Property<Guid>("OrderId");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -58,28 +57,28 @@ namespace RepositoryLayer.Migrations
 
             modelBuilder.Entity("DataModels.Models.Event", b =>
                 {
-                    b.Property<long>("EventId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Created");
 
                     b.Property<long>("OrderId");
 
+                    b.Property<Guid?>("OrderId1");
+
                     b.Property<int>("eventType");
 
                     b.HasKey("EventId");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId1");
 
                     b.ToTable("events");
                 });
 
             modelBuilder.Entity("DataModels.Models.Order", b =>
                 {
-                    b.Property<long>("OrderId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("OrderId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedDate");
 
@@ -135,8 +134,7 @@ namespace RepositoryLayer.Migrations
                 {
                     b.HasOne("DataModels.Models.Order", "order")
                         .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OrderId1");
                 });
 
             modelBuilder.Entity("DataModels.Models.Order", b =>

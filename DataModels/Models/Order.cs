@@ -15,7 +15,7 @@ namespace DataModels.Models
     public class Order
     {
         [Key]
-        public long OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public string OrderDescription { get; set; }
         [Timestamp]
         public byte[] RowVersion { get; set; }
