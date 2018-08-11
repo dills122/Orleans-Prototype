@@ -16,10 +16,15 @@
                 <span asp-validation-for="OrderDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Username" class="control-label"></label>
+                <select asp-for="Username" asp-items="@ViewBag.Users" class="form-control"></select>
+                <span asp-validation-for="orderType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="orderType" class="control-label"></label>
                 @Html.DropDownList("AccountType",
-             Html.GetEnumSelectList<DataModels.Models.OrderType>(),
-             "Select Account Type", new { @class = "form-control" })
+          Html.GetEnumSelectList<DataModels.Models.OrderType>(),
+          "Select Account Type", new { @class = "form-control" })
                 <span asp-validation-for="orderType" class="text-danger"></span>
             </div>
             <div class="form-group">

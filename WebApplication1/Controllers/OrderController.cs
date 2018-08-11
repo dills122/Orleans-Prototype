@@ -11,6 +11,8 @@ using PipelineService.Interfaces;
 using System.IO;
 using PipelineService.Models;
 using PipelineService.Pipelines;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrleansClient.Controllers
 {
@@ -56,6 +58,12 @@ namespace OrleansClient.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            var grain = _client.GetGrain<IAllUsers>("All");
+            var users = grain.GetAllUsers().Result;
+            var selectlist = users.OrderBy(u => u.Username).Select(x => new { Id = x.Username, Value = x.Username });
+
+
+            ViewBag.Users = new SelectList(selectlist, "Id","Value");
             return View();
         }
 
@@ -65,7 +73,6 @@ namespace OrleansClient.Controllers
         {
             order.CreatedDate = DateTime.Now;
             //Static for now since not session state/auth set up for knowing
-            order.Username = "dills122";
             OrderProcessing orderProcessing = new OrderProcessing();
             orderProcessing.order = order;
             foreach (IFormFile file in files)

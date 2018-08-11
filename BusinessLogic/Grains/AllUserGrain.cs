@@ -2,6 +2,8 @@
 using DataModels.Models;
 using Orleans;
 using RepositoryLayer;
+using RepositoryLayer.Abstraction;
+using RepositoryLayer.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +15,11 @@ namespace BusinessLogic.Grains
     public class AllUserGrain : Grain, IAllUsers
     {
         private List<User> users { get; set; }
+        public IBulkRepository<User, string> _repository;
 
         public override Task OnActivateAsync()
         {
+            _repository = new BulkUserRepository();
             //Initializes on grain activation
             users = new List<User>();
 
@@ -32,10 +36,6 @@ namespace BusinessLogic.Grains
             UpdateState();
             return base.OnDeactivateAsync();
         }
-        public Task DeleteState()
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<List<User>> GetAllUsers()
         {
@@ -44,45 +44,22 @@ namespace BusinessLogic.Grains
             return Task.FromResult(users);
         }
 
-        public Task ReadState()
-        {
-            using(var context = new OrleansContext())
-            {
-                var users = context.users.ToList();
-                if(users != null)
-                {
-                    this.users = users;
-                }
-            }
-            return Task.CompletedTask;
-        }
-
-        public Task UpdateState()
+        public void WriteState()
         {
             throw new NotImplementedException();
         }
 
-        public Task WriteState()
+        public void ReadState()
+        {
+            users = _repository.GetAll().ToList();
+        }
+
+        public void UpdateState()
         {
             throw new NotImplementedException();
         }
 
-        void IState.WriteState()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IState.ReadState()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IState.UpdateState()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IState.DeleteState()
+        public void DeleteState()
         {
             throw new NotImplementedException();
         }
