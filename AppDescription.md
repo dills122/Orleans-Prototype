@@ -24,4 +24,4 @@ Built using Microsoft Orleans for the middle tier where all business logic and s
 
  Entity Framework Core already natively implements a Repository Pattern underneath, which can seem redundent to build another over top. However, this pattern also adds a nice level of data abstraction, along with better maintainability. 
  
- Another feature that help within this prototype is using the Unit of Work Feature within the Repository Pattern which allows for each persistent storage call to be seperate 
+### *Still a work in progress*
