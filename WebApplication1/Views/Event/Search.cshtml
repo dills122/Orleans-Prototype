@@ -1,0 +1,45 @@
+﻿@model OrleansClient.ViewModels.OrderSearchViewModel
+@{
+    ViewData["Title"] = "Search";
+}
+
+<h2>Search</h2>
+
+
+<div class="row">
+    <div class="col-md-4">
+        @foreach (OrleansClient.ViewModels.OrderSearchViewModel mod in ViewBag.Orders)
+        {
+            <div>
+                <h3>Order</h3>
+                <div>
+                    <label>OrderID</label>
+                    <div>@mod.order.OrderId</div>
+                </div>
+                <div>
+                    <label>Order Description</label>
+                    <div>@mod.order.OrderDescription</div>
+                </div>
+                <div>
+                    <label>Order Type</label>
+                    <div>@mod.order.orderType</div>
+                </div>
+                <div>
+                    <h3>Events</h3>
+                    @foreach (DataModels.Models.Event evnt in mod.events)
+                    {
+                        <div>
+                            <label>EventID</label>
+                            <div>@evnt.EventId</div>
+                        </div>
+                        <div>
+                            <label>Event Type</label>
+                            <div>@evnt.eventType</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

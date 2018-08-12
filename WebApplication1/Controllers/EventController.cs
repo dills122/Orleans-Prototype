@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BusinessLogic.GrainInterfaces;
+using DataModels.Models;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
+using OrleansClient.ViewModels;
 
 namespace OrleansClient.Controllers
 {
@@ -27,5 +29,27 @@ namespace OrleansClient.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Search(string id)
+        {
+            List<OrderSearchViewModel> orderSearchViewModels = new List<OrderSearchViewModel>();
+            List<Order> orders = new List<Order>();
+            //EWW
+            List<List<Event>> events = new List<List<Event>>();
+            var userGrain = _client.GetGrain<IUser>(id);
+            var orderIds = await userGrain.GetOrders();
+            foreach(Guid orderID in orderIds)
+            {
+                var orderGrain = _client.GetGrain<IOrder>(orderID);
+                var order = await orderGrain.GetOrder();
+
+                var OrderEventsGrain = _client.GetGrain<IOrderEvents>(orderID);
+                var orderEvents = await OrderEventsGrain.GetOrdersEvents();
+
+                OrderSearchViewModel orderSearchViewModel = new OrderSearchViewModel(order, (List<Event>)orderEvents);
+                orderSearchViewModels.Add(orderSearchViewModel);
+            }
+            ViewBag.Orders = orderSearchViewModels;
+            return View();
+        }
     }
 }

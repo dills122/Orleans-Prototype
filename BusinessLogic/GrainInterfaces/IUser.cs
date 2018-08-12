@@ -11,7 +11,7 @@ namespace BusinessLogic.GrainInterfaces
     {
         Task CreateUser(User State);
         Task UpdateUser(User State);
-        Task<List<long>> GetOrders();
+        Task<List<Guid>> GetOrders();
         Task DeleteUser();
         Task<User> GetUser();
     }

@@ -6,13 +6,14 @@ using Orleans;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RepositoryLayer.RepositoryExtensions;
 
 namespace BusinessLogic.Grains
 {
     public class UserGrain : Grain, IUser
     {
         private User state { get; set; }
-        private List<long> orderIds { get; set; }
+        private List<Guid> orderIds { get; set; }
 
         private IRepository<User,string> _repository;
 
@@ -21,7 +22,7 @@ namespace BusinessLogic.Grains
             _repository = new UserRepository();
             //Initializes on grain activation
             state = new User();
-            orderIds = new List<long>();
+            orderIds = new List<Guid>();
 
             state.Username = this.GetPrimaryKeyString();
             ReadState();
@@ -77,7 +78,7 @@ namespace BusinessLogic.Grains
         /// Gets all of the order ids 
         /// </summary>
         /// <returns></returns>
-        public Task<List<long>> GetOrders()
+        public Task<List<Guid>> GetOrders()
         {
            return Task.FromResult(orderIds);
         }
@@ -123,6 +124,12 @@ namespace BusinessLogic.Grains
             if(temp != null)
             {
                 state = temp;
+            }
+            IOrderRepository<Order, Guid> orderRepo = new OrderRepository();
+            var orderIds = orderRepo.GetOrderIds(state.Username);
+            if(orderIds != null)
+            {
+                this.orderIds = (List<Guid>)orderIds;
             }
         }
 

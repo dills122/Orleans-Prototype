@@ -10,7 +10,7 @@ using System.Text;
 
 namespace RepositoryLayer.Repository
 {
-    public class OrderRepository : IRepository<Order, Guid>, IOrderRepository<Order>
+    public class OrderRepository : IOrderRepository<Order, Guid>
     {
         private IUnitOfWork _unitOfWork;
         private IDatabaseContextFactory _databaseContextFactory;
@@ -52,6 +52,17 @@ namespace RepositoryLayer.Repository
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
                 return _unitOfWork.context.Set<Order>().Where(o => o.OrderId == key).FirstOrDefault();
+            }
+        }
+
+        public IEnumerable<Guid> GetOrderIds(string key)
+        {
+            using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
+            {
+                return _unitOfWork.context.Set<Order>()
+                        .Where(o => o.Username == key)
+                        .Select(o => o.OrderId)
+                        .ToList();
             }
         }
 
