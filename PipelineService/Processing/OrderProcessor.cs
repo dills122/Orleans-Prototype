@@ -10,30 +10,49 @@ namespace PipelineService.Processing
     public static class OrderProcessor
     {
         
-        public static void ProcessFiles(OrderProcessing orderProcessing)
+        public static bool ProcessFiles(OrderProcessing orderProcessing)
         {
-            IRepository<Document, Guid> repository = new DocumentRepository();
-            foreach(InputFile file in orderProcessing.files)
+            try
             {
-                Document document = new Document
+                IRepository<Document, Guid> repository = new DocumentRepository();
+                foreach (InputFile file in orderProcessing.files)
                 {
-                    DocumentId = new Guid(),
-                    DocumentBaseSixFour = Convert.ToBase64String(file.FilesBytes),
-                    documentType = file.documentType,
-                    DocumentExtension = file.FileName.Split('.')[1],
-                    DocumentName = file.FileName,
-                    IsApproved = true,
-                    OrderId = orderProcessing.order.OrderId,
-                    Location = file.FileName
-                };
-                repository.Add(document);
+                    Document document = new Document
+                    {
+                        DocumentId = new Guid(),
+                        DocumentBaseSixFour = Convert.ToBase64String(file.FilesBytes),
+                        documentType = file.documentType,
+                        DocumentExtension = file.FileName.Split('.')[1],
+                        DocumentName = file.FileName,
+                        IsApproved = true,
+                        OrderId = orderProcessing.order.OrderId,
+                        Location = file.FileName
+                    };
+                    repository.Add(document);
+                }
+            } 
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
             }
+            return true;
         }
         
-        public static void ProcessOrder(OrderProcessing orderProcessing)
+        public static bool ProcessOrder(OrderProcessing orderProcessing)
         {
-            IRepository<Order, Guid> repository = new OrderRepository();
-            repository.Add(orderProcessing.order);
+            try
+            {
+                IRepository<User, string> UserRepo = new UserRepository();
+                IRepository<Order, Guid> repository = new OrderRepository();
+                repository.Add(orderProcessing.order);
+            }
+             catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+            return true;
         }
     }
 }

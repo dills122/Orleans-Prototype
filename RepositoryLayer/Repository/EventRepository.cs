@@ -9,53 +9,53 @@ using System.Text;
 
 namespace RepositoryLayer.Repository
 {
-    public class DocumentRepository : IRepository<Document, Guid>
+    public class EventRepository : IRepository<Event, Guid>
     {
         private IUnitOfWork _unitOfWork;
         private IDatabaseContextFactory _databaseContextFactory;
 
-        public DocumentRepository()
+        public EventRepository()
         {
             _databaseContextFactory = new DatabaseContextFactory();
         }
 
-        public void Add(Document entity)
+        public void Add(Event entity)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
-                _unitOfWork.context.Set<Document>().Add(entity);
+                _unitOfWork.context.Set<Event>().Add(entity);
                 _unitOfWork.Commit();
             }
         }
 
-        public void Delete(Document entity)
+        public void Delete(Event entity)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
-                Document existing = _unitOfWork.context.Set<Document>().Find(entity);
+                Event existing = _unitOfWork.context.Set<Event>().Find(entity);
                 if (existing != null)
                 {
-                    _unitOfWork.context.Set<Document>().Remove(entity);
+                    _unitOfWork.context.Set<Event>().Remove(entity);
                     _unitOfWork.Commit();
                 }
             }
         }
 
-        public Document Get(Guid key)
+        public Event Get(Guid key)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
-                return _unitOfWork.context.Set<Document>().Where(d => d.DocumentId == key).FirstOrDefault();
+                return _unitOfWork.context.Set<Event>().Where(e => e.EventId == key).FirstOrDefault();
             }
         }
 
-        public void Update(Document entity)
+        public void Update(Event entity)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
                 try
                 {
-                    var local = _unitOfWork.context.Set<Document>()
+                    var local = _unitOfWork.context.Set<Event>()
                         .Local
                         .FirstOrDefault(e => e.OrderId.Equals(entity.OrderId));
                     if (local != null)
@@ -69,11 +69,11 @@ namespace RepositoryLayer.Repository
                 catch (DbUpdateConcurrencyException ex)
                 {
                     var entry = ex.Entries.Single();
-                    var clientValues = (Document)entry.Entity;
+                    var clientValues = (Event)entry.Entity;
                     var databaseEntry = entry.GetDatabaseValues();
                     if (databaseEntry != null)
                     {
-                        var databaseValues = (Document)databaseEntry.ToObject();
+                        var databaseValues = (Event)databaseEntry.ToObject();
 
                         UpdateException updateException = new UpdateException(databaseValues);
                         throw updateException;

@@ -79,18 +79,17 @@ namespace RepositoryLayer.Migrations
                     EventId = table.Column<Guid>(nullable: false),
                     eventType = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
-                    OrderId = table.Column<long>(nullable: false),
-                    OrderId1 = table.Column<Guid>(nullable: true)
+                    OrderId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_events", x => x.EventId);
                     table.ForeignKey(
-                        name: "FK_events_orders_OrderId1",
-                        column: x => x.OrderId1,
+                        name: "FK_events_orders_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "orders",
                         principalColumn: "OrderId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -99,9 +98,9 @@ namespace RepositoryLayer.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_events_OrderId1",
+                name: "IX_events_OrderId",
                 table: "events",
-                column: "OrderId1");
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_orders_Username",

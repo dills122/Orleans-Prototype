@@ -1,6 +1,8 @@
-﻿using Gridsum.DataflowEx;
+﻿using DataModels.Models;
+using Gridsum.DataflowEx;
 using PipelineService.Interfaces;
 using PipelineService.Models;
+using PipelineService.Processing;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,8 +24,31 @@ namespace PipelineService.Pipelines
         {
             _results = new List<OrderProcessing>();
 
-            _inputBlock = new TransformBlock<OrderProcessing, OrderProcessing>(obj => obj);
-            _resultsBlock = new ActionBlock<OrderProcessing>(obj => _results.Add(obj));
+            _inputBlock = new TransformBlock<OrderProcessing, OrderProcessing>(obj =>
+            {
+                var success = OrderProcessor.ProcessOrder(obj);
+                if(!success)
+                {
+                    EventCreation.CreateEvent(obj.order.OrderId, EventType.ErrorProcessing);
+                } else
+                {
+                    EventCreation.CreateEvent(obj.order.OrderId, EventType.StartProcessing);
+                }
+                return obj;
+            });
+            _resultsBlock = new ActionBlock<OrderProcessing>(obj =>
+            {
+                var success = OrderProcessor.ProcessFiles(obj);
+                if(!success)
+                {
+                    EventCreation.CreateEvent(obj.order.OrderId, EventType.ErrorProcessing);
+                }
+                else
+                {
+                    _results.Add(obj);
+                    EventCreation.CreateEvent(obj.order.OrderId, EventType.FinishedProcessing);
+                }
+            });
 
             _inputBlock.LinkTo(_resultsBlock, new DataflowLinkOptions() { PropagateCompletion = true });
 

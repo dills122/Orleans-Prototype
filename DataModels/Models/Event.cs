@@ -21,7 +21,7 @@ namespace DataModels.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Created { get; set; }
         [Required]
-        public long OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public virtual Order order { get; set; }
     }
 }

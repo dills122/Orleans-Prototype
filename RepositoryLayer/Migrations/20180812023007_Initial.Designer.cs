@@ -10,7 +10,7 @@ using RepositoryLayer;
 namespace RepositoryLayer.Migrations
 {
     [DbContext(typeof(OrleansContext))]
-    [Migration("20180811231358_Initial")]
+    [Migration("20180812023007_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,15 +64,13 @@ namespace RepositoryLayer.Migrations
 
                     b.Property<DateTime>("Created");
 
-                    b.Property<long>("OrderId");
-
-                    b.Property<Guid?>("OrderId1");
+                    b.Property<Guid>("OrderId");
 
                     b.Property<int>("eventType");
 
                     b.HasKey("EventId");
 
-                    b.HasIndex("OrderId1");
+                    b.HasIndex("OrderId");
 
                     b.ToTable("events");
                 });
@@ -136,7 +134,8 @@ namespace RepositoryLayer.Migrations
                 {
                     b.HasOne("DataModels.Models.Order", "order")
                         .WithMany()
-                        .HasForeignKey("OrderId1");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("DataModels.Models.Order", b =>
