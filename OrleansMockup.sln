@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogic", "BusinessLo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiloCluster", "SiloCluster\SiloCluster.csproj", "{2CA752F2-8C0D-4B71-B168-3A817DC12ED5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleansClient", "WebApplication1\OrleansClient.csproj", "{D50452A5-660E-4102-A020-C1924E6A7BF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleansClient", "OrleansClient\OrleansClient.csproj", "{D50452A5-660E-4102-A020-C1924E6A7BF7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataModels", "DataModels\DataModels.csproj", "{2D2A672C-64E9-4FFC-9455-0D839BD3C864}"
 EndProject
