@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+<div>
+    @foreach (DataModels.Models.Event evnt in ViewBag.Events)
+    {
+        <div>@evnt.eventType</div>
+        <div>@evnt.OrderId</div>
+    }
+</div>
+

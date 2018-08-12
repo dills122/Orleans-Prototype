@@ -11,10 +11,10 @@ namespace BusinessLogic.Grains
 {
     public class UserGrain : Grain, IUser
     {
-        public User state { get; set; }
-        public List<long> orderIds { get; set; }
+        private User state { get; set; }
+        private List<long> orderIds { get; set; }
 
-        public IRepository<User,string> _repository;
+        private IRepository<User,string> _repository;
 
         public override Task OnActivateAsync()
         {

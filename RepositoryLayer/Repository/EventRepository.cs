@@ -2,6 +2,7 @@
 using DataModels.Models;
 using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.ContextFactory;
+using RepositoryLayer.RepositoryExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Text;
 
 namespace RepositoryLayer.Repository
 {
-    public class EventRepository : IRepository<Event, Guid>
+    public class EventRepository : IEventRepository<Event, Guid>
     {
         private IUnitOfWork _unitOfWork;
         private IDatabaseContextFactory _databaseContextFactory;
@@ -46,6 +47,14 @@ namespace RepositoryLayer.Repository
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
                 return _unitOfWork.context.Set<Event>().Where(e => e.EventId == key).FirstOrDefault();
+            }
+        }
+
+        public IEnumerable<Event> GetOrdersEvents(Guid id)
+        {
+            using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
+            {
+                return _unitOfWork.context.Set<Event>().Where(e => e.OrderId == id).ToList();
             }
         }
 

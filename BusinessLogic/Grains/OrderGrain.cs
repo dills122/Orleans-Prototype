@@ -8,15 +8,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RepositoryLayer.Repository;
 
 namespace BusinessLogic.Grains
 {
     public class OrderGrain : Grain, IOrder
     {
-        public Order state { get; set; }
+        private Order state { get; set; }
+        private IRepository<Order, Guid> _repository;
 
         public override Task OnActivateAsync()
         {
+            _repository = new OrderRepository();
             //Initializes on grain activation
             state = new Order();
 
@@ -67,61 +70,32 @@ namespace BusinessLogic.Grains
 
         public void ReadState()
         {
-            //using(var context = new OrleansContext())
-            //{
-            //    var order = context.orders.Where(x => x.OrderId == state.OrderId).SingleOrDefault();
-            //    if(order == null)
-            //    {
-            //        this.DeactivateOnIdle();
-            //    }
-            //    state = order;
-            //}
+            var temp = _repository.Get(this.GetPrimaryKey());
+            if (temp != null)
+            {
+                state = temp;
+            }
         }
         public void DeleteState()
         {
-            //using (var context = new OrleansContext())
-            //{
-            //    context.orders.Remove(state);
-            //    context.SaveChanges();
-            //    //Should deactive grain on deletion
-            //    this.DeactivateOnIdle();
-            //}
+            _repository.Delete(state);
         }
 
         public void UpdateState()
         {
-            //using (var context = new OrleansContext())
-            //{
-            //    context.orders.Update(state);
-            //    try
-            //    {
-            //        context.SaveChanges();
-            //    }
-            //    catch (DbUpdateConcurrencyException ex)
-            //    {
-            //        var entry = ex.Entries.Single();
-            //        var clientValues = (Order)entry.Entity;
-            //        var databaseEntry = entry.GetDatabaseValues();
-            //        //Make sure the row wasn't deleted
-            //        if (databaseEntry != null)
-            //        {
-            //            var databaseValues = (Order)databaseEntry.ToObject();
-            //            if (clientValues.orderType != databaseValues.orderType)
-            //            {
-            //                //Bubble up the exception to controller for proper handling
-            //                throw new UpdateException("Order type has been changed",databaseValues);
-            //            }
-            //            //Update Row Version to allow update
-            //            state.RowVersion = databaseValues.RowVersion;
-            //            context.SaveChanges();
-            //        }
-            //    }
-            //}
+            try
+            {
+                _repository.Update(state);
+            }
+            catch (UpdateException ex)
+            {
+                throw ex;
+            }
         }
 
         public void WriteState()
         {
-            throw new NotImplementedException();
+            _repository.Add(state);
         }
     }
 }
