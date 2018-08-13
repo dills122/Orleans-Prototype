@@ -9,6 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RepositoryLayer.Repository;
+using PipelineService.Interfaces;
+using PipelineService.Pipelines;
+using PipelineService.Allocation;
+using PipelineService.Models;
 
 namespace BusinessLogic.Grains
 {
@@ -16,9 +20,11 @@ namespace BusinessLogic.Grains
     {
         private Order state { get; set; }
         private IRepository<Order, Guid> _repository;
+        private IPipelineAlloc<OrderProcessingPipeline> _pipelineAlloc;
 
         public override Task OnActivateAsync()
         {
+            _pipelineAlloc = new PipelineAlloc<OrderProcessingPipeline>();
             _repository = new OrderRepository();
             //Initializes on grain activation
             state = new Order();
@@ -63,9 +69,20 @@ namespace BusinessLogic.Grains
             return Task.FromResult(state);
         }
 
-        public Task ProcessOrder()
+        public Task ProcessOrder(OrderProcessing orderProcessing)
         {
-            throw new NotImplementedException();
+            var list = new List<OrderProcessing>();
+            list.Add(orderProcessing);
+            IPipeline<OrderProcessing> _pipeline = _pipelineAlloc.RetrievePipeline().Result;
+            _pipeline.ProcessAndForget(list);
+
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveOrder()
+        {
+            DeleteState();
+            return Task.CompletedTask;
         }
 
         public void ReadState()

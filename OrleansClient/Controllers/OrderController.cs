@@ -175,7 +175,7 @@ namespace OrleansClient.Controllers
             var order = await grain.GetOrder();
             if (order.CreatedDate != DateTime.MinValue)
             {
-                //TODO create delete method in order grain
+                await grain.RemoveOrder();
             }
             return RedirectToAction(nameof(Index));
         }

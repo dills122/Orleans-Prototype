@@ -43,7 +43,7 @@ namespace PipelineService.Processing
         {
             try
             {
-                IRepository<User, string> UserRepo = new UserRepository();
+                //IRepository<User, string> UserRepo = new UserRepository();
                 IRepository<Order, Guid> repository = new OrderRepository();
                 repository.Add(orderProcessing.order);
             }

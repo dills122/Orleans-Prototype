@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataModels.Models;
 using Orleans;
+using PipelineService.Models;
 
 namespace BusinessLogic.GrainInterfaces
 {
@@ -12,6 +13,7 @@ namespace BusinessLogic.GrainInterfaces
         Task CreateOrder(Order order);
         Task UpdateOrder(Order order);
         Task<Order> GetOrder();
-        Task ProcessOrder();
+        Task RemoveOrder();
+        Task ProcessOrder(OrderProcessing orderProcessing);
     }
 }

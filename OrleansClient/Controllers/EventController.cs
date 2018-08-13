@@ -18,13 +18,8 @@ namespace OrleansClient.Controllers
             _client = client;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            ////Static orderID for testing
-            //Guid guid = Guid.Parse("fc0dc48c-eb6d-45b6-a458-fc24e0c6f340");
-            //var grain = _client.GetGrain<IOrderEvents>(guid);
-            //var events = await grain.GetOrdersEvents();
-            //ViewBag.Events = events;
             return View();
         }
 
@@ -46,6 +41,7 @@ namespace OrleansClient.Controllers
                 orderSearchViewModels.Add(orderSearchViewModel);
             }
             ViewBag.Orders = orderSearchViewModels;
+            ViewBag.Username = id.Username;
             return View();
         }
     }

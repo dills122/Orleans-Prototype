@@ -1,17 +1,19 @@
 ﻿using DataModels.Models;
 using Gridsum.DataflowEx;
+using Microsoft.Win32.SafeHandles;
 using PipelineService.Interfaces;
 using PipelineService.Models;
 using PipelineService.Processing;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace PipelineService.Pipelines
 {
-    public class OrderProcessingPipeline : Dataflow<OrderProcessing>, IPipeline<OrderProcessing>
+    public class OrderProcessingPipeline : Dataflow<OrderProcessing>, IPipeline<OrderProcessing>, IDisposable
     {
         public override ITargetBlock<OrderProcessing> InputBlock { get { return _inputBlock; } }
 
@@ -19,6 +21,10 @@ namespace PipelineService.Pipelines
         private ActionBlock<OrderProcessing> _resultsBlock;
 
         private List<OrderProcessing> _results { get; set; }
+
+        bool disposed = false;
+        // Instantiate a SafeHandle instance.
+        SafeHandle handle = new SafeFileHandle(IntPtr.Zero, true);
 
         public OrderProcessingPipeline() : base(DataflowOptions.Default)
         {
@@ -94,6 +100,29 @@ namespace PipelineService.Pipelines
         {
             //Fire and forget
             Task.Factory.StartNew(() => ProcessWaitForResults(ts));
+        }
+
+        /// <summary>
+        /// Right now should only be used on WaitForResults
+        /// Might dispose of pipeline before finished if not
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        // Protected implementation of Dispose pattern.
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+            {
+                return;
+            }
+            if (disposing)
+            {
+                handle.Dispose();
+            }
+            disposed = true;
         }
     }
 }

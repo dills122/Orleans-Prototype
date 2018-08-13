@@ -4,6 +4,13 @@ My take at building an Enterprise-like Orleans solution using EF Core to manage 
 
 For more details read the App Description (still in progress) for the details of the app.
 
+### Current working features
+- User CRUD Operations
+- Create Order/Process Order
+- Lookup Order/Events by Username
+
+**This gives a basic working example of all the backend features within the app**
+
 ### Setting up the DB on Initial
 
 If it's your first time running the application
