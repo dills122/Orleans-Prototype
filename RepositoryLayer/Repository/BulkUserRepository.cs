@@ -15,7 +15,6 @@ namespace RepositoryLayer.Repository
         public BulkUserRepository()
         {
             _databaseContextFactory = new DatabaseContextFactory();
-            //_unitOfWork = new UnitOfWork(new OrleansContext());
         }
 
         public IEnumerable<User> GetAll()

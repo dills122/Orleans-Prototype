@@ -17,7 +17,6 @@ namespace RepositoryLayer.Repository
         public UserRepository()
         {
             _databaseContextFactory = new DatabaseContextFactory();
-            //_unitOfWork = new UnitOfWork(new OrleansContext());
         }
         public void Add(User entity)
         {

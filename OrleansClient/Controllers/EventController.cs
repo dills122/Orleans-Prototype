@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BusinessLogic.GrainInterfaces;
 using DataModels.Models;
@@ -29,13 +28,13 @@ namespace OrleansClient.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Search(string id)
+        public async Task<IActionResult> Search(User id)
         {
             List<OrderSearchViewModel> orderSearchViewModels = new List<OrderSearchViewModel>();
             List<Order> orders = new List<Order>();
             //EWW
             List<List<Event>> events = new List<List<Event>>();
-            var userGrain = _client.GetGrain<IUser>(id);
+            var userGrain = _client.GetGrain<IUser>(id.Username);
             var orderIds = await userGrain.GetOrders();
             foreach(Guid orderID in orderIds)
             {

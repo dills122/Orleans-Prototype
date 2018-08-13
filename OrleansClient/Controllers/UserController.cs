@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using BusinessLogic;
 using DataModels.Models;
 using Orleans;
 using BusinessLogic.GrainInterfaces;
-using Microsoft.EntityFrameworkCore.Storage;
 using DataModels.Exceptions;
 
 namespace OrleansClient.Controllers
 {
     public class UserController : Controller
     {
-
         private IClusterClient _client;
 
         public UserController( IClusterClient client)
@@ -27,25 +21,25 @@ namespace OrleansClient.Controllers
         // GET: User
         public async Task<IActionResult> Index()
         {
-            //var grain = _client.GetGrain<IAllUsers>("All");
-            //var users = grain.GetAllUsers().Result;
-            //if(users == null)
-            //{
-            //    var emptyList = new List<User>();
-            //    return View(emptyList);
-            //}
-            return View(new List<User>());
+            var grain = _client.GetGrain<IAllUsers>("All");
+            var users = await grain.GetAllUsers();
+            if (users == null)
+            {
+                var emptyList = new List<User>();
+                return View(emptyList);
+            }
+            return View(users);
         }
 
         // GET: User/Details/5
-        public IActionResult Details(string id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
                 return NotFound();
             }
             var grain = _client.GetGrain<IUser>(id);
-            var user = grain.GetUser().Result;
+            var user = await grain.GetUser();
             if(user.CreatedDate == DateTime.MinValue)
             {
                 return NotFound();
@@ -86,7 +80,7 @@ namespace OrleansClient.Controllers
                 return NotFound();
             }
             var grain = _client.GetGrain<IUser>(id);
-            var user = grain.GetUser().Result;
+            var user = await grain.GetUser();
             if(user.CreatedDate != DateTime.MinValue)
             {
                 return View(user);
@@ -106,16 +100,13 @@ namespace OrleansClient.Controllers
                 return NotFound();
             }
             var grain = _client.GetGrain<IUser>(id);
-            //Throwing error from grain is not getting caught in controller
             try
             {
-                //Since error is not bubbling up the await isn't returning
                 await grain.UpdateUser(user);
                 return RedirectToAction(nameof(Index));
             }
             catch(UpdateException ex)
             {
-
                 var databaseValues = (User)ex.databaseValues;
 
                 if(databaseValues.FName != user.FName)
@@ -131,21 +122,6 @@ namespace OrleansClient.Controllers
                     ModelState.AddModelError("Account Type", "Current value: " + databaseValues.accountType);
                 }
                 user.RowVersion = databaseValues.RowVersion;
-                //var clientValues = (User)ex.Entries.Single().Entity;
-                //var databaseEntry = ex.Entries.Single().GetDatabaseValues();
-                //if(databaseEntry == null)
-                //{
-                //    ModelState.AddModelError(string.Empty, "Unable to save changes. The user was deleted by another admin.");
-                //}
-                //else
-                //{
-                //    var databaseValues = (User)databaseEntry.ToObject();
-                //    if(databaseValues.accountType != clientValues.accountType)
-                //    {
-                //        ModelState.AddModelError("Account Type", "Current value: " + databaseValues.accountType);
-                //    }
-                //    user.RowVersion = databaseValues.RowVersion;
-                //}
             }
             return View(user);
         }
@@ -158,7 +134,7 @@ namespace OrleansClient.Controllers
                 return NotFound();
             }
             var grain = _client.GetGrain<IUser>(id);
-            var user = grain.GetUser().Result;
+            var user = await grain.GetUser();
             if(user.CreatedDate != DateTime.MinValue)
             {
                 return View(user);
@@ -176,23 +152,12 @@ namespace OrleansClient.Controllers
                 return NotFound();
             }
             var grain = _client.GetGrain<IUser>(id);
-            var user = grain.GetUser().Result;
+            var user = await grain.GetUser();
             if(user.CreatedDate != DateTime.MinValue)
             {
                 await grain.DeleteUser();
             }
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserExists(string id)
-        {
-            var grain = _client.GetGrain<IUser>(id);
-            var user = grain.GetUser().Result;
-            if(user.CreatedDate != DateTime.MinValue)
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

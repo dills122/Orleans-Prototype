@@ -18,8 +18,6 @@ namespace SiloCluster
         private static readonly ManualResetEvent siloStopped = new ManualResetEvent(false);
         static void Main(string[] args)
         {
-
-
             silo = new SiloHostBuilder()
                 .Configure<ClusterOptions>(options =>
                 {
@@ -40,18 +38,8 @@ namespace SiloCluster
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(UserGrain).Assembly).WithReferences())
                 .ConfigureLogging(logging => logging.AddConsole())
-                //need to configure a grain storage called "PubSubStore" for using streaming with ExplicitSubscribe pubsub type
-                //.AddMemoryGrainStorage("PubSubStore")
-                //.AddAdoNetGrainStorage("OrleansStorage", options =>
-                //{
-                //    options.Invariant = "System.Data.SqlClient";
-                //    options.ConnectionString = @"Server=(localdb)\MSSQLLocalDB;Initial Catalog=OrleansStorage;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-                //    options.UseJsonFormat = true;
-                //})
                 .UseDashboard(options => { })
                 .Build();
-
-
 
             Task.Run(StartSilo);
 
@@ -60,7 +48,6 @@ namespace SiloCluster
                 Task.Run(StopSilo);
                 siloStopped.WaitOne();
             };
-
             siloStopped.WaitOne();
         }
 

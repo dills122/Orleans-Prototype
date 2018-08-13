@@ -32,7 +32,7 @@ namespace OrleansClient.Controllers
         public async Task<IActionResult> Index()
         {
             var grain = _client.GetGrain<IAllOrders>("All");
-            var orders = grain.GetAllOrders().Result;
+            var orders = await grain.GetAllOrders();
             if (orders == null)
             {
                 var emptyList = new List<Order>();
@@ -41,14 +41,14 @@ namespace OrleansClient.Controllers
             return View(orders);
         }
         [HttpGet]
-        public IActionResult Details(Guid id)
+        public async Task<IActionResult> Details(Guid id)
         {
             if (id == null)
             {
                 return NotFound();
             }
             var grain = _client.GetGrain<IOrder>(id);
-            var order = grain.GetOrder().Result;
+            var order = await grain.GetOrder();
             if (order.CreatedDate == DateTime.MinValue)
             {
                 return NotFound();
@@ -56,12 +56,11 @@ namespace OrleansClient.Controllers
             return View(order);
         }
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var grain = _client.GetGrain<IAllUsers>("All");
-            var users = grain.GetAllUsers().Result;
+            var users = await grain.GetAllUsers();
             var selectlist = users.OrderBy(u => u.Username).Select(x => new { Id = x.Username, Value = x.Username });
-
 
             ViewBag.Users = new SelectList(selectlist, "Id","Value");
             return View();
@@ -101,8 +100,8 @@ namespace OrleansClient.Controllers
             orderProcessings.Add(orderProcessing);
 
             _pipeline = await _pipelineAlloc.RetrievePipeline();
-            var test = await _pipeline.ProcessWaitForResults(orderProcessings);
-            //_pipeline.ProcessAndForget(orderProcessings);
+            //var test = await _pipeline.ProcessWaitForResults(orderProcessings);
+            _pipeline.ProcessAndForget(orderProcessings);
 
             return View();
         }
@@ -114,7 +113,7 @@ namespace OrleansClient.Controllers
                 return NotFound();
             }
             var grain = _client.GetGrain<IOrder>(id);
-            var order = grain.GetOrder().Result;
+            var order = await grain.GetOrder();
             if (order.CreatedDate != DateTime.MinValue)
             {
                 return View(order);
@@ -131,12 +130,20 @@ namespace OrleansClient.Controllers
             var grain = _client.GetGrain<IOrder>(id);
             try
             {
-
+                await grain.UpdateOrder(order);
             }
             catch (UpdateException ex)
             {
                 var dbValues = (Order)ex.databaseValues;
-                //TODO Optimistic concurrency
+                if(dbValues.orderType != order.orderType)
+                {
+                    ModelState.AddModelError("Order Type", "Current value: " + dbValues.orderType);
+                }
+                if(dbValues.OrderDescription != order.OrderDescription)
+                {
+                    ModelState.AddModelError("Order Description", "Current value: " + dbValues.OrderDescription);
+                }
+                order.RowVersion = dbValues.RowVersion;
             }
             return View(order);
         }
@@ -148,7 +155,7 @@ namespace OrleansClient.Controllers
                 return NotFound();
             }
             var grain = _client.GetGrain<IOrder>(id);
-            var order = grain.GetOrder().Result;
+            var order = await grain.GetOrder();
             if (order.CreatedDate != DateTime.MinValue)
             {
                 return View(order);
@@ -165,7 +172,7 @@ namespace OrleansClient.Controllers
                 return NotFound();
             }
             var grain = _client.GetGrain<IOrder>(id);
-            var order = grain.GetOrder().Result;
+            var order = await grain.GetOrder();
             if (order.CreatedDate != DateTime.MinValue)
             {
                 //TODO create delete method in order grain
