@@ -20,20 +20,18 @@ namespace OrleansClient.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //Static orderID for testing
-            Guid guid = Guid.Parse("fc0dc48c-eb6d-45b6-a458-fc24e0c6f340");
-            var grain = _client.GetGrain<IOrderEvents>(guid);
-            var events = await grain.GetOrdersEvents();
-            ViewBag.Events = events;
+            ////Static orderID for testing
+            //Guid guid = Guid.Parse("fc0dc48c-eb6d-45b6-a458-fc24e0c6f340");
+            //var grain = _client.GetGrain<IOrderEvents>(guid);
+            //var events = await grain.GetOrdersEvents();
+            //ViewBag.Events = events;
             return View();
         }
 
         public async Task<IActionResult> Search(User id)
         {
             List<OrderSearchViewModel> orderSearchViewModels = new List<OrderSearchViewModel>();
-            List<Order> orders = new List<Order>();
-            //EWW
-            List<List<Event>> events = new List<List<Event>>();
+
             var userGrain = _client.GetGrain<IUser>(id.Username);
             var orderIds = await userGrain.GetOrders();
             foreach(Guid orderID in orderIds)
