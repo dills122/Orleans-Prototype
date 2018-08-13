@@ -55,6 +55,28 @@ namespace RepositoryLayer.Repository
             }
         }
 
+        public IEnumerable<Guid> GetAssociatedDocuments(Guid OrderId)
+        {
+            using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
+            {
+                return _unitOfWork.context.Set<Document>()
+                        .Where(o => o.OrderId == OrderId)
+                        .Select(o => o.DocumentId)
+                        .ToList();
+            }
+        }
+
+        public IEnumerable<Guid> GetAssociatedEvents(Guid OrderId)
+        {
+            using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
+            {
+                return _unitOfWork.context.Set<Event>()
+                        .Where(o => o.OrderId == OrderId)
+                        .Select(o => o.EventId)
+                        .ToList();
+            }
+        }
+
         public IEnumerable<Guid> GetOrderIds(string key)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))

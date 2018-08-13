@@ -34,10 +34,17 @@ namespace OrleansClient.Controllers
                 var orderGrain = _client.GetGrain<IOrder>(orderID);
                 var order = await orderGrain.GetOrder();
 
-                var OrderEventsGrain = _client.GetGrain<IOrderEvents>(orderID);
-                var orderEvents = await OrderEventsGrain.GetOrdersEvents();
+                var eventIds = await orderGrain.GetAssociatedEvents();
+                var events = new List<Event>();
+                foreach(Guid key in eventIds)
+                {
+                    var eventGrain = _client.GetGrain<IEvent>(key);
+                    var evnt = await eventGrain.GetEvent();
+                    events.Add(evnt);
 
-                OrderSearchViewModel orderSearchViewModel = new OrderSearchViewModel(order, (List<Event>)orderEvents);
+                }
+
+                OrderSearchViewModel orderSearchViewModel = new OrderSearchViewModel(order, (List<Event>)events);
                 orderSearchViewModels.Add(orderSearchViewModel);
             }
             ViewBag.Orders = orderSearchViewModels;

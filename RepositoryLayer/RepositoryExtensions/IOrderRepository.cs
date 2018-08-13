@@ -10,5 +10,8 @@ namespace RepositoryLayer.RepositoryExtensions
     {
         Func<IQueryable<TEntity>, bool> Exists();
         IEnumerable<TKey> GetOrderIds(string key);
+        //Hacks since all ids non string use Guids
+        IEnumerable<TKey> GetAssociatedEvents(TKey key);
+        IEnumerable<TKey> GetAssociatedDocuments(TKey key);
     }
 }

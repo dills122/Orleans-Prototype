@@ -14,6 +14,8 @@ namespace BusinessLogic.GrainInterfaces
         Task UpdateOrder(Order order);
         Task<Order> GetOrder();
         Task RemoveOrder();
+        Task<IEnumerable<Guid>> GetAssociatedDocuments();
+        Task<IEnumerable<Guid>> GetAssociatedEvents();
         Task ProcessOrder(OrderProcessing orderProcessing);
     }
 }

@@ -1,25 +1,23 @@
 ﻿using DataModels.Exceptions;
 using BusinessLogic.GrainInterfaces;
 using DataModels.Models;
-using Microsoft.EntityFrameworkCore;
 using Orleans;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using RepositoryLayer.Repository;
 using PipelineService.Interfaces;
 using PipelineService.Pipelines;
 using PipelineService.Allocation;
 using PipelineService.Models;
+using RepositoryLayer.RepositoryExtensions;
 
 namespace BusinessLogic.Grains
 {
     public class OrderGrain : Grain, IOrder, IState
     {
         private Order state { get; set; }
-        private IRepository<Order, Guid> _repository;
+        private IOrderRepository<Order, Guid> _repository;
         private IPipelineAlloc<OrderProcessingPipeline> _pipelineAlloc;
 
         public override Task OnActivateAsync()
@@ -67,6 +65,16 @@ namespace BusinessLogic.Grains
         public Task<Order> GetOrder()
         {
             return Task.FromResult(state);
+        }
+
+        public Task<IEnumerable<Guid>> GetAssociatedDocuments()
+        {
+            return Task.FromResult(_repository.GetAssociatedDocuments(state.OrderId));
+        }
+
+        public Task<IEnumerable<Guid>> GetAssociatedEvents()
+        {
+            return Task.FromResult(_repository.GetAssociatedEvents(state.OrderId));
         }
 
         public Task ProcessOrder(OrderProcessing orderProcessing)
