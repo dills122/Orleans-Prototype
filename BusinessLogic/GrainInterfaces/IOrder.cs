@@ -7,7 +7,7 @@ using Orleans;
 
 namespace BusinessLogic.GrainInterfaces
 {
-   public interface IOrder : IGrainWithGuidKey, IState
+   public interface IOrder : IGrainWithGuidKey
     {
         Task CreateOrder(Order order);
         Task UpdateOrder(Order order);

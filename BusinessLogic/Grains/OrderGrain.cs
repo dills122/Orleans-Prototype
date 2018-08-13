@@ -12,7 +12,7 @@ using RepositoryLayer.Repository;
 
 namespace BusinessLogic.Grains
 {
-    public class OrderGrain : Grain, IOrder
+    public class OrderGrain : Grain, IOrder, IState
     {
         private Order state { get; set; }
         private IRepository<Order, Guid> _repository;

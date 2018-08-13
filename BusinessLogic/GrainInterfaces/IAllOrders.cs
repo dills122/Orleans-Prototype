@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.GrainInterfaces
 {
-    public interface IAllOrders : IGrainWithStringKey, IState
+    public interface IAllOrders : IGrainWithStringKey
     {
         Task<List<Order>> GetAllOrders();
     }

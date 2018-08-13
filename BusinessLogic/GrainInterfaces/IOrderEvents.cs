@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.GrainInterfaces
 {
-    public interface IOrderEvents : IGrainWithGuidKey, IState
+    public interface IOrderEvents : IGrainWithGuidKey
     {
         Task<IEnumerable<Event>> GetOrdersEvents();
     }

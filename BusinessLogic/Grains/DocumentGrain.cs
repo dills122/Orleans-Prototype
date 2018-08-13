@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.Grains
 {
-    public class DocumentGrain : Grain, IDocument
+    public class DocumentGrain : Grain, IDocument, IState
     {
         private Document state { get; set; }
 

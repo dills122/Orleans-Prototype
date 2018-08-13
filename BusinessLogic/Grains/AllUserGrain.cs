@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.Grains
 {
-    public class AllUserGrain : Grain, IAllUsers
+    public class AllUserGrain : Grain, IAllUsers, IState
     {
         private List<User> users { get; set; }
         public IBulkRepository<User, string> _repository;

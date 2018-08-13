@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.Grains
 {
-    public class OrderEventsGrain : Grain, IOrderEvents
+    public class OrderEventsGrain : Grain, IOrderEvents, IState
     {
         private IEnumerable<Event> state { get; set; }
         private Guid _orderID { get; set; }

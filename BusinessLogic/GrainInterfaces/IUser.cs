@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.GrainInterfaces
 {
-   public interface IUser :IGrainWithStringKey, IState
+   public interface IUser :IGrainWithStringKey
     {
         Task CreateUser(User State);
         Task UpdateUser(User State);

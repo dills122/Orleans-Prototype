@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.GrainInterfaces
 {
-   public interface IAllUsers : IGrainWithStringKey, IState
+   public interface IAllUsers : IGrainWithStringKey
     {
         Task<List<User>> GetAllUsers();
     }

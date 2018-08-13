@@ -10,7 +10,7 @@ using RepositoryLayer.RepositoryExtensions;
 
 namespace BusinessLogic.Grains
 {
-    public class UserGrain : Grain, IUser
+    public class UserGrain : Grain, IUser, IState
     {
         private User state { get; set; }
         private List<Guid> orderIds { get; set; }

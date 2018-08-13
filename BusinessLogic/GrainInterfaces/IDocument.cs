@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.GrainInterfaces
 {
-    public interface IDocument : IGrainWithGuidKey, IState
+    public interface IDocument : IGrainWithGuidKey
     {
         Task<Document> GetDocument();
         Task UpdateDocument(Document document);
