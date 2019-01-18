@@ -1,8 +1,7 @@
-﻿using RepositoryLayer.Repository;
+﻿using RepositoryLayer.Abstraction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace RepositoryLayer.RepositoryExtensions
 {

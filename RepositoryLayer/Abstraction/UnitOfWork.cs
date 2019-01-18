@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RepositoryLayer.Repository
+namespace RepositoryLayer.Abstraction
 {
     public class UnitOfWork : IUnitOfWork
     {

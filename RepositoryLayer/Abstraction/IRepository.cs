@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RepositoryLayer.Repository
+﻿namespace RepositoryLayer.Abstraction
 {
     public interface IRepository<TEntity, in TKey> where TEntity : class
     {
