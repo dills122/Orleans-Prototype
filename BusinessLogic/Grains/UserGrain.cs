@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RepositoryLayer.RepositoryExtensions;
+using RepositoryLayer.Abstraction;
 
 namespace BusinessLogic.Grains
 {

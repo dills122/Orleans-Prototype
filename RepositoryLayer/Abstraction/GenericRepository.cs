@@ -1,72 +1,75 @@
 ﻿using DataModels.Exceptions;
-using DataModels.Models;
 using Microsoft.EntityFrameworkCore;
-using RepositoryLayer.Abstraction;
 using RepositoryLayer.ContextFactory;
-using RepositoryLayer.RepositoryExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
-namespace RepositoryLayer.Repository
+namespace RepositoryLayer.Abstraction
 {
-    public class EventRepository : IEventRepository<Event, Guid>
+    public abstract class GenericRepository<TEntity, TKey> : IGenericRepository<TEntity, TKey> where TEntity : class
     {
-        private IUnitOfWork _unitOfWork;
-        private IDatabaseContextFactory _databaseContextFactory;
 
-        public EventRepository()
+        protected IUnitOfWork _unitOfWork;
+        protected readonly IDatabaseContextFactory _databaseContextFactory;
+
+        protected GenericRepository()
         {
             _databaseContextFactory = new DatabaseContextFactory();
         }
 
-        public void Add(Event entity)
+        public void Add(TEntity entity)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
-                _unitOfWork.context.Set<Event>().Add(entity);
+                _unitOfWork.context.Set<TEntity>().Add(entity);
                 _unitOfWork.Commit();
             }
         }
 
-        public void Delete(Event entity)
+        public void Delete(TEntity entity)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
-                Event existing = _unitOfWork.context.Set<Event>().Find(entity);
+                TEntity existing = _unitOfWork.context.Set<TEntity>().Find(entity);
                 if (existing != null)
                 {
-                    _unitOfWork.context.Set<Event>().Remove(entity);
+                    _unitOfWork.context.Set<TEntity>().Remove(entity);
                     _unitOfWork.Commit();
                 }
             }
         }
 
-        public Event Get(Guid key)
+        protected abstract bool MatchKey(TEntity entity, TKey key);
+        protected abstract bool MatchEntity(TEntity source, TEntity target);
+        protected abstract bool MatchIntForGetList(TEntity source, int foreignKey);
+
+        public TEntity Get(TKey key)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
-                return _unitOfWork.context.Set<Event>().Where(e => e.EventId == key).FirstOrDefault();
+                return _unitOfWork.context.Set<TEntity>().Where(o => MatchKey(o, key)).FirstOrDefault();
             }
         }
 
-        public IEnumerable<Event> GetOrdersEvents(Guid id)
+        public IEnumerable<TEntity> GetListByIntKey(int foreignKey)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
-                return _unitOfWork.context.Set<Event>().Where(e => e.OrderId == id).ToList();
+                return _unitOfWork.context.Set<TEntity>().Where(o => MatchIntForGetList(o, foreignKey));
             }
         }
 
-        public void Update(Event entity)
+        public void Update(TEntity entity)
         {
             using (_unitOfWork = new UnitOfWork(_databaseContextFactory.Create()))
             {
                 try
                 {
-                    var local = _unitOfWork.context.Set<Event>()
+                    var local = _unitOfWork.context.Set<TEntity>()
                         .Local
-                        .FirstOrDefault(e => e.OrderId.Equals(entity.OrderId));
+                        .FirstOrDefault(e => MatchEntity(e, entity));
                     if (local != null)
                     {
                         _unitOfWork.context.Entry(local).State = EntityState.Detached;
@@ -78,11 +81,10 @@ namespace RepositoryLayer.Repository
                 catch (DbUpdateConcurrencyException ex)
                 {
                     var entry = ex.Entries.Single();
-                    var clientValues = (Event)entry.Entity;
                     var databaseEntry = entry.GetDatabaseValues();
                     if (databaseEntry != null)
                     {
-                        var databaseValues = (Event)databaseEntry.ToObject();
+                        var databaseValues = (TEntity)databaseEntry.ToObject();
 
                         UpdateException updateException = new UpdateException(databaseValues);
                         throw updateException;

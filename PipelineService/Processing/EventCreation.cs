@@ -1,8 +1,7 @@
 ﻿using DataModels.Models;
+using RepositoryLayer.Abstraction;
 using RepositoryLayer.Repository;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PipelineService.Processing
 {
