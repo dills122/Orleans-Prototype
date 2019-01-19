@@ -1,6 +1,9 @@
 ﻿using BusinessLogic.GrainInterfaces;
+using DataModels.Exceptions;
 using DataModels.Models;
 using Orleans;
+using RepositoryLayer.Repository;
+using RepositoryLayer.RepositoryExtensions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,17 +13,15 @@ namespace BusinessLogic.Grains
     public class AccountGrain : Grain, IAccount, IState
     {
         private Account _state { get; set; }
+        private IAccountRepository<Account, int> _repository { get; set; }
 
         public override Task OnActivateAsync()
         {
-            //_repository = new OrderRepository();
+            _repository = new AccountRepository();
             _state = new Account();
 
-            if ((int)this.GetPrimaryKeyLong() != 0)
-            {
-                _state.AccountNumber = (int)this.GetPrimaryKeyLong();
-                ReadState();
-            }
+            _state.AccountNumber = (int)this.GetPrimaryKeyLong();
+            ReadState();
 
             return base.OnActivateAsync();
         }
@@ -37,12 +38,18 @@ namespace BusinessLogic.Grains
 
         public Task<bool> CreateAccount(Account account)
         {
-            throw new NotImplementedException();
+            if(account != null)
+            {
+                _state = account;
+                WriteState();
+            }
+            return Task.FromResult(true);
         }
 
         public Task<Account> GetAccountInfo()
         {
-            throw new NotImplementedException();
+            ReadState();
+            return Task.FromResult(_state);
         }
 
         public Task<List<int>> GetTransactions(bool? onlyRecent)
@@ -52,32 +59,53 @@ namespace BusinessLogic.Grains
 
         public Task<bool> RemoveAccount()
         {
-            throw new NotImplementedException();
+            DeleteState();
+            return Task.FromResult(true);
         }
 
         public Task<bool> UpdateAccountInfo(Account account)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _state = account;
+                UpdateState();
+            }
+            catch (UpdateException ex)
+            {
+                throw ex;
+            }
+            return Task.FromResult(true);
         }
 
         public void WriteState()
         {
-            throw new NotImplementedException();
+            _repository.Add(_state);
         }
 
         public void ReadState()
         {
-            throw new NotImplementedException();
+            var temp = _repository.Get((int)this.GetPrimaryKeyLong());
+            if (temp != null)
+            {
+                _state = temp;
+            }
         }
 
         public void UpdateState()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _repository.Update(_state);
+            }
+            catch (UpdateException ex)
+            {
+                throw ex;
+            }
         }
 
         public void DeleteState()
         {
-            throw new NotImplementedException();
+            _repository.Delete(_state);
         }
     }
 }
