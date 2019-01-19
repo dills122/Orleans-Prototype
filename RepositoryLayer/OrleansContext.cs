@@ -1,20 +1,15 @@
 ﻿using DataModels.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace RepositoryLayer
 {
-     public class OrleansContext : DbContext
+    public class OrleansContext : DbContext
     {
         public DbSet<User> users { get; set; }
 
-        public DbSet<Order> orders { get; set; }
+        public DbSet<Account> accounts { get; set; }
 
-        public DbSet<Document> documents { get; set; }
-
-        public DbSet<Event> events { get; set; }
+        public DbSet<Transaction> transactions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

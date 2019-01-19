@@ -15,8 +15,10 @@ namespace DataModels.Models
     {
         [Key]
         [Required]
-        [StringLength(25)]
-        public string Username { get; set; }
+        public int UserId { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string UserName { get; set; }
         public string FName { get; set; }
         public string LName { get; set; }
         [DataType(DataType.Date)]
@@ -26,6 +28,6 @@ namespace DataModels.Models
         [Timestamp]
         public byte[] RowVersion { get; set; }
 
-        public virtual ICollection<Order> orders { get; set; }
+        public virtual ICollection<Account> Accounts { get; set; }
     }
 }
