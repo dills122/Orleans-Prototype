@@ -17,7 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
     <ProjectReference Include="..\DataModels\DataModels.csproj" />
-    <ProjectReference Include="..\PipelineService\PipelineService.csproj" />
   </ItemGroup>
 
 </Project>

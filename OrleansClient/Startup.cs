@@ -10,8 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
-using PipelineService.Allocation;
-using PipelineService.Interfaces;
 
 namespace OrleansClient
 {
@@ -29,7 +27,6 @@ namespace OrleansClient
         {
             services.AddMvc();
             services.AddSingleton<IClusterClient>(CreateClusterClientAsync);
-            services.AddTransient(typeof(IPipelineAlloc<>), typeof(PipelineAlloc<>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

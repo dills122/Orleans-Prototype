@@ -21,8 +21,8 @@ namespace SiloCluster
             silo = new SiloHostBuilder()
                 .Configure<ClusterOptions>(options =>
                 {
-                    options.ClusterId = "nexsys-prototype-deployment1";
-                    options.ServiceId = "NexsysOrleansPrototype";
+                    options.ClusterId = "bank-account-prototype";
+                    options.ServiceId = "BankAccountOrleansPrototype";
                 })
                 //.Configure<MultiClusterOptions>(options =>
                 //{
